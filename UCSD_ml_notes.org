@@ -1,0 +1,94 @@
+* Week 1 Jan 11
+** Working on emacs python setup and install
+** DONE : python Jupyter, etc 
+** Met with Guy
++ Google dataset search
+** DONE Look at kaggle.com
+++ registered with google id. 
+++ Kaagle:
+I did a quick scan of kaggle datasets, there is useful info there,
+there's a few notebooks with analysis of the vaastav data, which is
+extracted from the APIs, as far as I can tell.  There appears to be
+some additional effort to collect other stats, but nothing significant.
+https://www.kaggle.com/idoyo92/premier-league-fantasy-point-prediction
+
+** DONE look for dataset on fpl
++ Found some APIs and references
++ https://towardsdatascience.com/fantasy-premier-league-value-analysis-python-tutorial-using-the-fpl-api-8031edfe9910
++ https://medium.com/@frenzelts/fantasy-premier-league-api-endpoints-a-detailed-guide-acbd5598eb19
+
+** Paperspace
++ Created account using github
++ created notebook1, and stopped it. 
+** Videos/Readings section 2.1 Data is Fuel
+Note on course on Executive Data Science on Coursera.  Statisticians vs Data Scientists who is he?
+-
+From Forbes article: Martin Willcox (The Real Reason why Ggl Flu Trends got .. wrong)
+If you are an equipment maker seeking to predict device failure using
+“Internet of Things” sensor data that describe current operating
+conditions and are streamed in near real-time, you can bet that a
+model that also accounts for equipment maintenance and manufacture
+data will out-perform one that does not.
+-
+Watch out for bias
+- 
+Clean your data
+** Videos/Readings section 2.2
+Videow the nature of Machine learning, part 2, Abstract learnin, the abillity to simulate situations withouth
+having to experience them.  Abstract learning allows humans to simulate many situations and learn from them
++ Geoffrey Hinton rebranded neural net research as “deep learning.” 2006
++ Types of Machine Learning
+1. Supervised
+2. Unsupervised 
+3. Batch Learning
+4. Online Learning
+
+Given a dataset A(D) = h, is a hypothesis
++ Batch Supervised Learning - Batch datapoints with labels
++ Online Supervised Learnng - Datapoints with the previous model
++ Parametric vs non-parametric
++ discriminative and generative
+
+
+Models are fit on training data comprised of inputs and outputs and
+used to make predictions on test sets where only the inputs are
+provided and the outputs from the model are compared to the withheld
+target variables and used to estimate the skill of the model.
++ find a way to track the time. 
++ Write a proposal in more detail. Create a business pitch.
++ 
+Metric .. could.
+
+Predictive/recommendations ..
++ 9 stage workflow
+  1. Model Requirements
+  2. Data Collection 
+  3. Data Cleaning
+  4. Data labeling
+  5. Feature Engineering.
+  6. Model Training (iterate repeating back to #5)
+  7. Model Evaluation
+  8. Model Monitoring (iterate back to #7 or #5)
+
+ + machine learning is being used heavily in infrastructure projects to manage incident
+reporting, identify the most likely causes for bugs, monitor
+fraudulent fiscal activity, and to monitor network streams for
+security breaches.
+
+** Capstone
++ Can we use reinforcement learning for our project?  See:
+ https://machinelearningmastery.com/types-of-learning-in-machine-learning/
+ Section 3. Reinforcement Learning. 
++ Capstone project proposes 4 types of projects:
+  data focused, model focused, architecture focused, and project focused.  I'm either concentrating on 
+  architecture or product. 
++ https://docs.google.com/document/d/1_kIx7CbITUpSC0ybe_7H2tNBZ5J4IPNBNcWJ6F608m0/edit?usp=sharing
+
+** Section 3 
+Seems to work?
++ remembering how to start jupyter on emacs
+0. pyvenv-mode - pyenv mode seems to conflict with someting in my emacs setup, need to cd to venv dir, then 
+activate with emacs ??
+1. ein-jupyter-start
+2. elpy
+3. ein-run
