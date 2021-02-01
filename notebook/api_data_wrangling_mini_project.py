@@ -11,7 +11,6 @@
 
 
 # Store the API key as a string - according to PEP8, constants are always named in all upper case
-API_KEY = 'B3aaZK2qsywQxcx2GM1T'
 
 
 # Qaundl has a large number of data sources, but, unfortunately, most of them require a Premium subscription. Still, there are also a good number of free datasets.
