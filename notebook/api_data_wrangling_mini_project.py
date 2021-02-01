@@ -43,7 +43,7 @@ import matplotlib.pyplot as plt
 
 # Now, call the Quandl API and pull out a small sample of the data (only one day) to get a glimpse
 # into the JSON structure that will be returned
-URL="https://www.quandl.com/api/v3/datasets/CFTC/0233CV_FO_L_ALL_CR.json?api_key=B3aaZK2qsywQxcx2GM1T&"
+URL="https://www.quandl.com/api/v3/datasets/CFTC/0233CV_FO_L_ALL_CR.json"
 parameters = {'start_date': '2020-01-01', 'end_date':'2020-12-31'}
 response = requests.get(URL, params=parameters)
 if response.status_code != 200:
