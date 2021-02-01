@@ -46,3 +46,15 @@ https://margaretmz.medium.com/anaconda-jupyter-notebook-tensorflow-and-keras-b91
   pip install --upgrade tensorflow
   pip install --upgrade Keras
   ```
+* Jupyter in Emacs
+  see: https://millejoh.github.io/emacs-ipython-notebook/#running-a-jupyter-notebook-server-from-emacs
+  We added ein, and elpy to the emacs setup, but struggled with getting jupyter to use the 3.8.6 venv.
+  To start jupyter in the correct venv:
+  ```
+  (venv-3.8.6) $ jupyter notebook --notebook-dir=~/src/juanman2/mlpy/notebook/ --no-browser &
+  ```
+  Then from emacs
+  ```
+  m-x ein:login
+  ```
+  
