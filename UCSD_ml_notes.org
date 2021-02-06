@@ -20,6 +20,7 @@ https://www.kaggle.com/idoyo92/premier-league-fantasy-point-prediction
 ** Paperspace
 + Created account using github
 + created notebook1, and stopped it. 
+* Week 2
 ** Videos/Readings section 2.1 Data is Fuel
 Note on course on Executive Data Science on Coursera.  Statisticians vs Data Scientists who is he?
 -
@@ -84,11 +85,221 @@ security breaches.
   architecture or product. 
 + https://docs.google.com/document/d/1_kIx7CbITUpSC0ybe_7H2tNBZ5J4IPNBNcWJ6F608m0/edit?usp=sharing
 
-** Section 3 
+* Week 3 Section 3 : Pandas
 Seems to work?
 + remembering how to start jupyter on emacs
 0. pyvenv-mode - pyenv mode seems to conflict with someting in my emacs setup, need to cd to venv dir, then 
 activate with emacs ??
-1. ein-jupyter-start
+1. ein-jupyter-start - this is not working b/c it does not consume the venv. 
 2. elpy
 3. ein-run
+** Scraping
+Lots of methods, look at the reference.  Scrapy seems easy.  Java script is hard.
+** Small Data
+- More complex models need more observations
+- Too many variables, means more observations
+- Correlated variables (features) add complexity, better to remove one variable
+- Data Problems
+  - Errors, inconsistencies, 
+  - empty data
+  - duplicates
+
+- Overfitting .. model just fits one kind of data and not generally
+  enough, need to make sure to keep test data aside
+- Under fitting .. model doesn't sufficently fit the curve, so doesn't help.
+- Data inputation, to replace missing data with computed 
+- Semi supervised, labeling some events
+
+** Section 5 EDA
+- Data classification: In hospital how many patients have diabetes vs no.  data inbalance
+- scatter plot note axis, 
+- Using pandas & pickle
+- Average/per ... max/per ... classification
+- Iris Flower Dataset:
+https://en.wikipedia.org/wiki/Iris_flower_data_set
+#+begin_src python
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
+iris = pd.read_csv('iris_data.csv')
+
+# misc operations
+iris.shape()
+iris.columns()
+iris.info()
+
+
+#+end_src
+
+- Frequent pattern
+** Pandas
+- Data Classification pickle
+#+begin_src python
+import pandas as pd
+
+data = pd.read_pickle('dtm.pkl')
+data.transpose()
+
+
+#+end_src
+
+- Useful functions head, tail, columns, info
+- Constructor from dictionary using pd.DataFrame
+#+begin_src python
+    cost = [2, 3, 8, 40]
+	foods = ['cheese', 'bread', 'milk', 'eggs']
+	list_labels = ['cost', 'food']
+	list_cols = [cost, foods]
+    zipped = list(zip(list_labels, list_cols))
+    data = dict(zipped)
+	food_frame = pd.DataFrame(data)
+#+end_src
+- Broadcasting a way to assign an entire column the same value
+#+begin_src python
+    data = {'food': foods, 'price': 0}
+#+end_src
+
+- Parts of the dataframe can be reinitialized/modifies, e.g. the column names like so:
+#+begin_src python
+   list_labels = ['year', 'artist', 'song', 'chart weeks']
+   df.columns = list_labels  
+#+end_src
+- Importing Data
+#+begin_src python
+   # load file
+   df = pd.read_csv('myfile.csv')
+   # no header
+   df = pd.read_csv('myfile.csv', header=None
+
+   # header replaced by columns and NaN defined to be -1 for missing data
+   col_names = ['year', 'month', 'day', 'sunspots', 'certainty']
+   sunspots = pd.read_csv('myfile.csv', header=None, names=col_names, na_values={'sunspots':['-1']})
+
+   # to parse the dates intelligently, use parse dates option, telling pd which columns hold the year, month, day
+   sunspots = pd.read_csv('myfile.csv', header=None, names=col_names, na_values={'sunspots':['-1']},
+                          parse_dates[[0, 1, 2]])
+
+   # to select a range of rows between 10-20
+   sunspots.iloc[10:20, :]
+
+   # exporting/writing
+  sunspots.to_csv(out)
+  sunspots.to_excel(out)
+
+  # Another example, this discards the first three lines, any lines with a # 
+  # and sets the delimter to a space instead of a comma
+  df2 = pd.read_csv(file_messy, delimiter=' ', header=3, comment='#')
+
+ #+end_src
+- Data visualization with Pandas
+#+begin_src python
+
+  # example loading up a csv, parsing in dates, setting up the index to be the dates
+  import pandas as pd
+  import matplotlib.pyplot as plt
+
+  # read a csv specifying the index column to use to be the date column
+  aapl = pd.read_csv('aapl.csv', index_col='date', parse_dates=True)
+
+  # Plotting
+  arr = aapl['close'].values
+  
+  # numpy 
+  plt.plot(arr)
+  plt.show()
+ 
+  # or as a series, you get better x/y axis
+  close_series = aapl['close']
+  plt.plot(close_series)
+  plt.show()
+
+  # or use Panda's plotting
+  close_series.plot()
+  plt.show()
+
+  # using the df plot would result in plotting all of the columns along the index axis
+  aapl.plot()
+  plt.show()
+
+  # scale log scale
+  plt.plot(aapl)
+  plt.yscale('log') 
+
+  # labels and titles
+  plt.ylabel("Y axis label")
+  plt.title("Graph Title")
+
+  # slicing
+  aapl.loc['2001': '2004', ['open', 'close', 'high', 'low']].plot
+
+  # saving
+  plt.savefig('aapl.png')
+  plt.show()
+
+  # subplots! (nice)
+  aapl.plot(subplots=True)
+
+  # Specifying a column list
+  col_list=['open', 'close']
+  aapl[col_list].plot()
+  plt.show()
+#+end_src
+- Data Wrangling with Pandas (pydata)
+https://github.com/talumbau/strata_data
+  + numpy - ndimentional array 
+  + Tools: skikit, matplotlib, bokeh, sympy, scipy
+#+begin_src python
+# this prevents jupyter from starting a window to plot something
+%matplotlib inline
+
+# dates
+start = pd.Timestamp('2010-2-2')
+end ... 
+
+# slicing selector on a date range for index date, and column 'open'
+df.loc['2010-1-4':'2014-1-4', 'open']
+
+# filtering, put in df_up all rows where the close column was higher than the open column
+df_up = df[df['close' > 'open']]
+
+# filter out rows that have volumen as null, pandas being used to exclude bad rows
+df_filtered = df[pd.isnull(pd['volumn']) == False]
+
+# applying a vector operation to say, create a new column called profit
+df['profit'] = df['close'].pct_change()
+
+# displaying more columns/rows .. max 10 columns in case below
+pd.options.display.max_columns = 10
+
+# deleting columns we don't like
+del df['badColumn']
+
+# indexes on multiple columns w/ sorting
+top_days = df.set_index(['stock', 'close']).sort_index()
+top_days.head()
+
+# multi-index
+
+# getting help in jupyter
+pd.read_csv?
+help(df.time.dt)
+
+# Making a series
+df['colname']
+df['colname'][0:20]
+
+#categoricals -- enums?, this converts a string to a category, which save space in memory
+df['beer_style'] = df['beer_style'].astype('category')
+
+#+end_src
+
+- Plotting
+#+begin_src python
+import matplotlib.pyplot as plt
+
+#+end_src
+
+- Look at odo for changing format of data with a schema
+
+
