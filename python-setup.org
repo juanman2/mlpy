@@ -35,6 +35,7 @@ _Python Setup notes_
 	   * <ctrl-c> <ctrl-c>
 	   * 
 * TensorFlow Keras
+
 https://margaretmz.medium.com/anaconda-jupyter-notebook-tensorflow-and-keras-b91f381405f8
   Careful here, you must be in a venv, go figure.  It has to do with 
   conflicting between MACs system python libraries and your own.
@@ -45,3 +46,18 @@ https://margaretmz.medium.com/anaconda-jupyter-notebook-tensorflow-and-keras-b91
   pip install --upgrade tensorflow
   pip install --upgrade Keras
   ```
+* Jupyter & Emacs
+  see: https://millejoh.github.io/emacs-ipython-notebook/#running-a-jupyter-notebook-server-from-emacs
+  We added ein, and elpy to the emacs setup, but struggled with getting jupyter to use the 3.8.6 venv.
+  To start jupyter in the correct venv:
+
+#+begin_src 
+  (venv-3.8.6) $ jupyter notebook --notebook-dir=~/src/juanman2/mlpy/notebook/ --no-browser &
+#+end_src
+
+  Then from emacs:
+
+#+begin_quote
+  m-x ein:login
+#+end_quote
+

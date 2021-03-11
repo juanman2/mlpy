@@ -1,11 +1,13 @@
+
+
 * Week 1 Jan 11
-** Working on emacs python setup and install
-** DONE : python Jupyter, etc 
-** Met with Guy
-+ Google dataset search
-** DONE Look at kaggle.com
-++ registered with google id. 
-++ Kaagle:
+ + Working on emacs python setup and install
+** DONE Install python Jupyter, etc 
+ + Met with Guy
+** DONE Google dataset search
+   + DONE Look at kaggle.com
+   + registered with google id. 
+** DONE Kaagle:
 I did a quick scan of kaggle datasets, there is useful info there,
 there's a few notebooks with analysis of the vaastav data, which is
 extracted from the APIs, as far as I can tell.  There appears to be
@@ -122,6 +124,12 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
+# Something like this may be needed to color axes/etc the way you want
+# 
+plt.rcParams["figure.facecolor"] = "white"
+plt.rcParams["axes.facecolor"] = "white"
+plt.rcParams["savefig.facecolor"] = "white"
+
 iris = pd.read_csv('iris_data.csv')
 
 # misc operations
@@ -129,6 +137,18 @@ iris.shape()
 iris.columns()
 iris.info()
 
+# simple scatter plot
+iris.plot(kind='scatter', x='sepal_length', y='sepal_width')
+
+# color coding a scatter plot
+import seaborn as sns
+
+sns.set_style("whitegrid")
+sns.FacetGrid(iris, hue="species", size=4) \
+   .map(plt.scatter, "sepal_length", "sepal_width")
+   .add_legend()
+
+plt.show()
 
 #+end_src
 
@@ -248,7 +268,14 @@ data.transpose()
 - Data Wrangling with Pandas (pydata)
 https://github.com/talumbau/strata_data
   + numpy - ndimentional array 
-  + Tools: skikit, matplotlib, bokeh, sympy, scipy
+
+  + Tools
+#+begin_src python
+import numpy as np
+np.floor_divide(df, 12) # vector operation on all elements converting to "dozens"
+
+#+end_src
+: skikit, matplotlib, bokeh, sympy, scipy
 #+begin_src python
 # this prevents jupyter from starting a window to plot something
 %matplotlib inline
@@ -272,7 +299,7 @@ df['profit'] = df['close'].pct_change()
 # displaying more columns/rows .. max 10 columns in case below
 pd.options.display.max_columns = 10
 
-# deleting columns we don't like
+# deletings columns we don't like
 del df['badColumn']
 
 # indexes on multiple columns w/ sorting
@@ -283,7 +310,7 @@ top_days.head()
 
 # getting help in jupyter
 pd.read_csv?
-help(df.time.dt)
+help(df.time.dt)ip
 
 # Making a series
 df['colname']
@@ -291,6 +318,59 @@ df['colname'][0:20]
 
 #categoricals -- enums?, this converts a string to a category, which save space in memory
 df['beer_style'] = df['beer_style'].astype('category')
+
+
+
+#+end_src
+- Joining Data 
+Pandas always joins using an outer left join, which means that rows that did not join, end up with null values.
+
+#+begin_src python
+# A join example that sort of worked
+# Now construct a DF 
+posList = [x for x in range(1,21)]
+list_labels = ['team', 'pos']
+list_cols = [teamList, posList]
+zipped = list(zip(list_labels, list_cols))
+data = dict(zipped)
+teamDF = pd.DataFrame(data)
+
+    team  pos
+0      4    1
+1     21    2
+2     11    3
+3     10    4
+4      1    5
+5     12    6
+6      7    7
+7     20    8
+8    127    9
+9     36   10
+10    25   11
+11    26   12
+12    42   13
+13     6   14
+14    45   15
+15    43   16
+16    33   17
+17    41   18
+18    13   19
+19    29   20
+
+
+praw = pd.read_csv("data/2016-17/players_raw.csv", index_col='id')
+
+pj = praw.join(teamDF, on='team', rsuffix='tl')
+pj[["team_code", "team", "total_points", "pos"]]
+
+# Another example from the movie data set.  Cast has title and year, release_dates has date and 
+# title .. so we extract the year, then join on the 'title','year' which is unique
+ian = cast[cast.name == 'Ian McKellen']
+ian.set_index(['title', 'year'])
+release_dates['year'] = release_dates['date'].dt.year
+release_dates.set_index(['title', 'year'])
+ian_rd = pd.merge(ian, release_dates, on = ['title', 'year'])
+ian_rd.groupby(ian_rd.date.dt.year)['date'].count().plot(kind='bar')
 
 #+end_src
 
@@ -303,3 +383,420 @@ import matplotlib.pyplot as plt
 - Look at odo for changing format of data with a schema
 
 
+** Pandas Section 
+I took an assessment and sucked. I think I got everything wrong. 
+Looking at the datacamp sections to get more pandas knowledge.
+*** Data
+**** .loc - labels
+#+begin_src python
+# a single cell
+df.loc['row1','col1']
+
+# return col1 for row1 thru row2 inclusive
+df.loc['row1':'row2', 'col1']
+
+# all rows, a list of columns
+df.loc[:,['col2', 'col4', 'col5']]
+
+# slicing using a step indicator, -1 goes in reverse
+election.loc['Potter':'Perry':-1,:]
+#+end_src
+**** .iloc - index positions (zero based) (row,col)
+#+begin_src python
+# returns a single sell
+df.iloc[0,2]
+
+# return column 3 for rows 0,1 range is exclusive, this is a series
+df.iloc[0:2, 3]
+
+# return all rows for columns 3,5. This is a dataframe
+df.iloc[:,[3,5]]
+#+end_src
+**** using brackets [col][row]
+#+begin_src python
+# return a dataframe made of column3 and colw
+df_subset = df[['col3', 'colw']]
+
+# return a series
+series_col2 = df['col2']
+
+# return a cell
+single_cell = df['col1']['row3']
+
+# select some rows and all columns, inclusive
+df_subset = df.loc['row2':'row4', :]
+#+end_src
+
+**** Filtering
+#+begin_src python
+# filter creates a series, df.colname > 60
+df[df.salt > 60]
+
+# boolean operations, note salt and eggs are column names on a time series
+df[(df.salt > 60) & (df.eggs <= 30)]
+
+# exclude columns that doesn't have values on all rows, 
+# df.all() select columns that have all values
+df.loc[:,df.all()]
+
+# df.any() selects columns that have any non-zero
+df.loc[:, df.any()]
+
+# combines any() and isnull() so returns rows that have any column that has a null value
+df.loc[:, df.isnull().any()]
+
+# select columns w/out NaN
+df.loc[:, df.notnull().all()]
+
+# return column based on another columns value
+df.col1['col2' > 30]
+
+# modify one column base on another coloumn's value
+df.col1['col2' > 30] += 5
+# another example modifying 'winner' column based on margin column
+election.winner[election.margin < 1.0] = np.nan
+#+end_src
+
+**** Dropping columns
+#+begin_src python
+# dropping rows, this drops rows that have any null values
+df.dropna(how='any')
+
+# dropping rows, this drops rows that have all null values
+df.dropna(how='all')
+
+# use the thresh= keyword argument to drop columns from the full dataset that have less than 1000 non-missing values.
+# drops columns that have less than 1000 good(non-null) values
+titanic.dropna(thresh=1000, axis='columns')
+#+end_src
+**** Transforming DataFrames
+Don't use loops, instead use either numpy or df native vector operations, which act on all elements in a row, column, or frame.
+#+begin_src python
+# divides every cell by 12
+df.floordiv(12)
+
+# custom functions, this does a floor div on every cell
+def dozens(n):
+    n // 12
+# invoke it
+df.apply(dozens)
+
+# Write a function to convert degrees Fahrenheit to degrees Celsius: to_celsius
+def to_celsius(F):
+    return 5/9*(F - 32)
+# Apply the function over 'Mean TemperatureF' and 'Mean TemperatureF': df_celsius
+df_celsius = weather[['Mean TemperatureF', 'Mean Dew PointF']].apply(to_celsius)
+
+# lambda
+df.apply(lambda n: n//12)
+
+# create a new (dozens_of_eggs)column using computations on eggs column
+df['dozens_of_eggs'] = df.eggs.floordiv(12)
+
+# a string transformation (to uper) on the index
+df.index = df.index.str.upper()
+
+# Transforming values using map
+# Create the dictionary: red_vs_blue
+red_vs_blue = {'Obama':'blue', 'Romney':'red'}
+
+# Use the dictionary to map the 'winner' column to the new column: election['color']
+election['color'] = election['winner'].map(red_vs_blue)
+#+end_src
+**** Scip
+In statistics, the z-score is the number of standard deviations by
+which an observation is above the mean - so if it is negative, it
+means the observation is below the mean.
+#+begin_src python
+# Import zscore from scipy.stats
+from scipy.stats import zscore as zs
+
+# Call zscore with election['turnout'] as input: turnout_zscore
+turnout_zscore = zs(election['turnout'])
+#+end_src
+**** Indexes
+#+begin_src python
+# Create the list of new indexes: new_idx
+new_idx = [i.upper() for i in sales.index]
+
+# read_csv with index setting
+players_raw_2016 = pd.read_csv('data/2016-17/players_raw.csv', index_col='id')
+
+# index & columns names
+# Assign the string 'MONTHS' to sales.index.name
+sales.index.name = 'MONTHS'
+sales.index = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
+
+# multi column index
+stocks = stocks.set_index(['Symbol', 'Date'])
+
+# sorting
+stocks = stocks.sort_index()
+
+# locating a row on a df with a multi-column index
+stocks.loc[('CSCO', '2016-10-04')]
+
+# extracting a slice
+stocks.loc['CSCO':'MSFT']
+# all columns .. outer 
+stocks.loc[(['AAPL', 'MSFT'], '2016-10-05'), :]
+# all columns .. inner 
+stocks.loc[('CSCO', ['2016-10-05', '2016-10-03']), :]
+# Fancy slice using both indexes
+stocks.loc[(slice(None), slice('2016-10-03', '2016-10-04')),:]
+# fetching just the 'Close' column
+stocks.loc[(['AAPL', 'MSFT'], '2016-10-05'), 'Close']
+
+# sort harry potter movies by year
+movies[movies.title.str.contains('harry potter', case=False)].sort_values(by='year', ascending=True)
+#+end_src
+**** pivoting
+#+begin_src python
+# Pivot the users DataFrame: visitors_pivot, note index, columns & rows
+visitors_pivot = users.pivot(index='weekday', columns='city', values='visitors')
+
+# Pivot users pivoted by both signups and visitors: pivot, value automatically set
+pivot = users.pivot(index='weekday', columns='city')
+trialsByTreatment = trials.pivot(index='treatment', columns='gender', values='response')
+#+end_src
++stacking & unstacking
+#+begin_src python
+unstacked = df.unstack(level='columnName')
+unstacked = df.unstack(level=1)
+# opposite, making a df thinner longer
+stacked = df.stack(level='columnname')
+# switching index level 
+swapped = df.swaplevel(0,1)
+sorteddf = swapped.sort_index()
+#+end_src
+**** melt - restoring a df to its original form
+#+begin_src python
+pd.melt(new_trials, id_vars=['treatment'], var_name='gender', value_name='response')  
+# Melt visitors_by_city_weekday: visitors
+visitors = pd.melt(visitors_by_city_weekday, id_vars=['weekday'], value_name='visitors')
+# Melt users: skinny
+skinny = pd.melt(users,id_vars=['weekday', 'city'])
+# extracting kv pairs
+user_idx = users.set_index(['city', 'weekday'])
+user_idx.melt(col_level=0)
+#+end_src
+**** pivot_table  (pivots but for non unique pairs it creates an aggregation, eg. average)
+#+begin_src python
+# use pivot_table, not to be confused with pivot
+more_trials.pivot_table(index='treatment',
+                        columns='gender',
+                        values='response')
+# here with the users table (in jupyter)
+users.pivot_table(index='weekday', columns='city')
+
+        signups        visitors       
+city     Austin Dallas   Austin Dallas
+weekday                               
+Mon           3      5      326    456
+Sun           7     12      139    237
+
+# with an aggregate function:
+# aggfunc='count'
+trials.pivot_table(index='treatment',
+                        columns='gender',
+                        values='response',
+                        aggfunc='count')
+# different aggfunc
+users.pivot_table(index='weekday', aggfunc=len)
+# use margins=true to get totals
+In [1]:
+users.pivot_table(index='weekday', aggfunc=sum, margins=True)
+Out[1]:
+
+         signups  visitors
+weekday                   
+Mon            8       782
+Sun           19       376
+All           27      1158
+#
+#+end_src
+**** GroupBy
+#+begin_src python
+# groupby and count
+sales.groupby('weekday').count()
+# groupby weekday, sum bred counts
+sales.groupby('weekday')['bread'].sum()
+# Aggregate 'survived' column of by_class by count
+count_by_class = titanic.groupby('pclass')['survived'].count()
+# Group titanic by 'embarked' and 'pclass'
+by_mult = titanic.groupby(['embarked', 'pclass'])
+# Aggregate 'survived' column of by_mult by count
+count_mult = by_mult['survived'].count()
+
+Name: survived, dtype: int64
+    embarked  pclass
+    C         1         141
+              2          28
+              3         101
+    Q         1           3
+              2           7
+              3         113
+    S         1         177
+              2         242
+              3         495
+    Name: survived, dtype: int64
+
+# Multiple Aggregations
+sales.groupby('city')[['bread','butter']].agg(['max','sum'])
+
+# multiple tables .. note the life df and the regions df, then grouping life by regions
+# NOTE for this to work, life and regions must have a common index, in this case country
+# Group life by regions['region']: life_by_region
+life_by_region = life.groupby(regions['region'])
+
+# Print the mean over the '2010' column of life_by_region
+print(life_by_region['2010'].mean())
+
+# print the top ten movie titles of all time
+top_ten = movies.title.value_counts()[:10]
+top_ten
+
+# print the years in the 2000s that saw the most movies 
+movies[(movies.year >= 2000) & (movies.year < 2010)].year.value_counts()[:3]
+
+#+end_src
+**** Categorical (enum)
+#+begin_src python
+# converting a series to an enum for efficiency, (category)
+sales['weekday'] = sales['weekday'].astype('category')
+df["marriage_status"] = df["marriage_status"].astype('category')
+#+end_src
+**** Cleaning data
+#+begin_src python
+# Remove $ from Revenue column
+sales['Revenue'] = sales['Revenue'].str.strip('$')
+sales['Revenue'] = sales['Revenue'].astype('int')
+
+# Verify that Revenue is now an integer
+assert sales['Revenue'].dtype == 'int'
+# Write an assert statement confirming the change
+assert ride_sharing['user_type_cat'].dtype == 'category'
+
+# Convert avg_rating > 5 to 5
+movies.loc[movies['avg_rating'] > 5, 'avg_rating'] = 5
+# Set all values above 27 to 27
+ride_sharing.loc[ride_sharing['tire_sizes'] > 27, 'tire_sizes'] = 27
+
+# Convert to DateTime
+user_signups['subscription_date'] = pd.to_datetime(user_signups['subscription_date'])
+# Set all in the future to today's date
+today = dt.date.today()
+ride_sharing.loc[ride_sharing['ride_dt'] > today, 'ride_dt'] = today
+
+# Replacing whitespace with NaN, so you can use fillna to input values
+import numpy as np
+stripped = wb_json_normalized.replace(r'^\s*$', np.nan, regex=True)
+wb_json_inputed = stripped.fillna(axis=1, method='pad')
+
+#+end_src
+**** Duplicates
+#+begin_src python
+# Column names to check for duplication
+column_names = ['first_name','last_name','address']
+duplicates = height_weight.duplicated(subset = column_names, keep = False)
+
+# Group by column names and produce statistical summaries
+column_names = ['first_name','last_name','address']
+summaries = {'height': 'max', 'weight': 'mean'}
+height_weight = height_weight.groupby(by = column_names).agg(summaries).reset_index()
+
+# Drop complete duplicates from ride_sharing
+ride_dup = ride_sharing.drop_duplicates()
+
+# Create statistics dictionary for aggregation function
+statistics = {'user_birth_year': 'min', 'duration': 'mean'}
+
+# Group by ride_id and compute new statistics
+ride_unique = ride_dup.groupby('ride_id').agg(statistics).reset_index()
+
+movies['decade'] = movies.year.apply(lambda n: (n//10)*10)
+movies.groupby('decade').count().sort_values('decade', ascending=True)
+
+#+end_src
+**** NaN, inputing values
+#+begin_src python
+# fill NaN with the value from the previous record
+new_df = df.fillna(method='ffill')
+# average guesses for missing values, default is linear
+new_df = df.interpolate()
+# considers time in a time series for interpolation, still linear
+new_df = df.interpolate(method="time")
+
+# drop rows with nan values
+new_df = df.dropna()
+# only drops if all values are NaN
+new_df = df.dropna(how="all")
+
+#+end_src
+** EDA
+https://www.youtube.com/watch?v=V0u6bxQOUJ8
+*** outliers
+ + look for outliers and either eliminate them, inpute them or apply a log scale on them. Tukey IQR
+ + use zscore
+ + use iqr
+ + Tukey IQR, 
+#+begin_src python
+returns lower and upper bound for quantiles between 25% and 75%
+q1, q3 = np.percentile(dataset,[25,75])
+iqrval = q3 - q1
+lower_bound = q1 - (1.5 * iqrval)
+upper_bound = q3 + (1.5 * iqrval)
+
+# tranform data using np log10 to eliminate outliers
+out_array = np.log10(inp_arra)
+#+end_src
+*** histograms
+#+begin_src python
+hist(data.weekday, bins=7, range = (-.5, 6.5), rwidth =.8, color='#')
+xticks(range(7), 'Mon Tue Wed thu Fri Sat Sun'.split())
+#+end_src
+*** heat map
+#+begin_src python
+# create a heat map, with weekday on the y axis, hour of day on y axis
+by_cross = data.groupby('weekday hour'.split()).apply(count_rows).unstack()
+seaborn.heatmap(by_cross)
+#+end_src
+*** Categoricals
+ + Dummy up categoricals
+*** Variable Interactions
+ + variable interactions - develop new columns that model interactions between other variables
+#+begin_src python
+from sklearn.preprocessing import Imputer
+#+end_src
+
+*** regex
+
+Python regex has some quirks, here are good ways to prototype regex
+
+https://bit.ly/yesregex
+https://pyregex.com/
+https://regexr.com/
+
+*** strings
+
+Many way to cut strings .. good examples here:
+
+https://nbviewer.jupyter.org/github/Springboard-CourseDev/PythonDataScienceHandbook/blob/master/notebooks/03.10-Working-With-Strings.ipynb
+
+*** Datetimes
+ + periods
+ + deltas 
+ + ranges 
+ + rolling windows
+ + time shifts
+ + dataframe functions with improved processing over default python
+
+There's some good examples here
+
+https://nbviewer.jupyter.org/github/jakevdp/PythonDataScienceHandbook/blob/master/notebooks/03.11-Working-with-Time-Series.ipynb
+
+*** JSON
+Pandas supplies json utility libraries, including a library to "normalize" python dictionary data into a flat 
+table that can be use by df.  Cool.  
+ + normalize
+ _
