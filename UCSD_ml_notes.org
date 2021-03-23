@@ -800,3 +800,26 @@ Pandas supplies json utility libraries, including a library to "normalize" pytho
 table that can be use by df.  Cool.  
  + normalize
  _
+
+* Data Transformation (ETL)
+Haddop, Spark, Flink, Snowflake .. transformations from datasources to datalake, to datawarehouse.
+Spark vs Dask, in memory versus BigData.  Does ML really need BIG (not in memory) data?
+** Recoding Features
+Use df.replace(), use df.loc, df.iloc, to select columns, and set to new values with functions. 
+** Removing Nulls
+In pandas, fillna, dropna, etc.
+** Standardizing/Normalizing
+
+** Missing Data
+** KFold Cross Validation
+Folding data into test & train, iterating with different folds, then applying onto different models while testing the accuracy
+#+begin_src python
+# Take an example where digits is the sample data.
+# digits.target is an image of a hand written number
+# digits.target is the intended number
+from sklearn.model_selection import cross_val_score
+
+cross_val_score(LogisticRegression(), digits.data, digits.target)
+cross_val_score(SVC(), digits.data, digits.target)
+cross_val_score(RandomForestClassifier(n_estimators=40), digits.data, digits.target)
+#+end_src
